@@ -48,6 +48,8 @@ format="%-8s %s\n"
 # Print header and shift arguments so that $1 is the path to look for
 printf "${format}" "SIZE" "NAME $var"
 
+IFS=" "
+
 for path in *; do
     # Check if path is a file
     if [ -f ${path} ]; then
@@ -57,3 +59,4 @@ for path in *; do
         echo ${path}/
     fi
 done
+ 
