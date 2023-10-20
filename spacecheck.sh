@@ -41,22 +41,37 @@ fi
 
 directory="$1"
 
+if [ ! -d "$directory" ];then 
+    echo "'$directory' is not a Directory!"
+    exit 1
+fi
 
 # Set printf format
 format="%-8s %s\n"
 
 # Print header and shift arguments so that $1 is the path to look for
-printf "${format}" "SIZE" "NAME $var"
 
-IFS=" "
+#command to show size folders and their subfolders (total and not only the link of the directory "4096 bytes")
+du_output=$(du -b "$directory" | sort -n -r)
 
-for path in *; do
+dateTime=$(date '+%Y%m%d')
+
+printf "${format}" "SIZE" "NAME $dateTime $var"
+echo "$du_output"
+
+
+
+#echo "$output" | awk '{print $5, $9}'
+
+
+
+#for path in *; do
     # Check if path is a file
-    if [ -f ${path} ]; then
-        echo ${path}
+#    if [ -f ${path} ]; then
+ #       echo ${path}
     # Directory
-    else
-        echo ${path}/
-    fi
-done
- 
+  #  else
+   #     echo ${path}/
+   # fi
+#done
+
