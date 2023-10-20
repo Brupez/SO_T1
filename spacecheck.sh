@@ -41,14 +41,18 @@ fi
 
 directory="$1"
 
-
 # Set printf format
 format="%-8s %s\n"
 
 # Print header and shift arguments so that $1 is the path to look for
 printf "${format}" "SIZE" "NAME $var"
 
-IFS=" "
+# Help us, read :(
+read -r -d " \n" -a my_array <"$(ls -l)"
+for elem in ${my_array}; do
+    echo ${elem}
+    echo "\n"
+done
 
 for path in *; do
     # Check if path is a file
@@ -59,4 +63,3 @@ for path in *; do
         echo ${path}/
     fi
 done
- 
