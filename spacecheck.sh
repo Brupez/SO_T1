@@ -31,12 +31,22 @@ while getopts "ad:l:n:rs:" opt; do
     esac
 done
 
+var="$*"
+shift $((OPTIND - 1))
+
+if [ $# -lt 1 ]; then
+    echo "Have to specify a folder: $0 <folder>"
+    exit 1
+fi
+
+directory="$1"
+
+
 # Set printf format
 format="%-8s %s\n"
 
 # Print header and shift arguments so that $1 is the path to look for
-printf "${format}" "SIZE" "NAME $*"
-shift $((OPTIND - 1))
+printf "${format}" "SIZE" "NAME $var"
 
 for path in *; do
     # Check if path is a file
