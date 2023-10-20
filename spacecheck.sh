@@ -70,8 +70,7 @@ echo "$du_output"
 #    if [ -f ${path} ]; then
  #       echo ${path}
     # Directory
-  #  else
-   #     echo ${path}/
-   # fi
+    #else
+       # echo ${path}/
+    #fi
 #done
-
