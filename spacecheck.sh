@@ -30,3 +30,12 @@ while getopts "ad:l:n:rs:" o; do
     *) ;;
     esac
 done
+
+# Set printf format
+format="%-8s %s\n"
+
+# Print header and shift arguments so that $1 is the path to look for
+printf "${format}" "SIZE" "NAME $*"
+shift $((OPTIND - 1))
+
+# Continue here
