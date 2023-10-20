@@ -7,8 +7,8 @@ filter=".*"       # All files
 reverse=false     # Disabled
 minFileSize=0     # All files; in bytes
 
-while getopts "ad:l:n:rs:" o; do
-    case "${o}" in
+while getopts "ad:l:n:rs:" opt; do
+    case "${opt}" in
     a)
         orderByName=true
         ;;
@@ -38,4 +38,12 @@ format="%-8s %s\n"
 printf "${format}" "SIZE" "NAME $*"
 shift $((OPTIND - 1))
 
-# Continue here
+for path in *; do
+    # Check if path is a file
+    if [ -f ${path} ]; then
+        echo ${path}
+    # Directory
+    else
+        echo ${path}/
+    fi
+done
