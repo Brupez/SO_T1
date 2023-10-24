@@ -49,10 +49,11 @@ fi
 # Set printf format
 format="%-8s %s\n"
 
-# Print header and shift arguments so that $1 is the path to look for
-
-#command to show size folders and their subfolders (total and not only the link of the directory "4096 bytes")
-du_output=$(du -b "$directory" | sort -n -r)
+if [ $reverse = false ]; then
+    du_output=$(sort -n -r <<<$du_output)
+else
+    du_output=$(sort -n <<<$du_output)
+fi
 
 dateTime=$(date '+%Y%m%d')
 
