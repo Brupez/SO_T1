@@ -49,10 +49,9 @@ fi
 # Set printf format
 format="%-8s %s\n"
 
-# command to show size folders and their subfolders (total and not only the link of the directory "4096 bytes")
+# Recursivelly get all directories and subdirectories, and their respective sizes
 if [ $(uname -s) = "Darwin" ]; then
-    # du_output=$(($(du -AaB 4096 "$directory" | cut -f1) * 512))
-    du_output=$(du -Aa $directory | awk -v var="$format" '{printf var, $1 * 512, $2}')
+    du_output=$(du -A $directory | awk -v var="$format" '{printf var, $1 * 512, $2}')
 else
     du_output=$(du -b "$directory")
 fi
