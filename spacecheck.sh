@@ -41,13 +41,21 @@ fi
 
 directory="$1"
 
-if [ ! -d "$directory" ];then 
+if [ ! -d "$directory" ]; then
     echo "'$directory' is not a Directory!"
     exit 1
 fi
 
 # Set printf format
 format="%-8s %s\n"
+
+# command to show size folders and their subfolders (total and not only the link of the directory "4096 bytes")
+if [ $(uname -s) = "Darwin" ]; then
+    # du_output=$(($(du -AaB 4096 "$directory" | cut -f1) * 512))
+    du_output=$(du -Aa $directory | awk -v var="$format" '{printf var, $1 * 512, $2}')
+else
+    du_output=$(du -b "$directory")
+fi
 
 if [ $reverse = false ]; then
     du_output=$(sort -n -r <<<$du_output)
@@ -58,20 +66,16 @@ fi
 dateTime=$(date '+%Y%m%d')
 
 printf "${format}" "SIZE" "NAME $dateTime $var"
-echo "$du_output"
-
-
+printf "$format" "$du_output"
 
 #echo "$output" | awk '{print $5, $9}'
 
-
-
 #for path in *; do
-    # Check if path is a file
+# Check if path is a file
 #    if [ -f ${path} ]; then
- #       echo ${path}
-    # Directory
-    #else
-       # echo ${path}/
-    #fi
+#       echo ${path}
+# Directory
+#else
+# echo ${path}/
+#fi
 #done
