@@ -1,4 +1,5 @@
 {
-    "editor.formatOnSave": true,
-    "git.autofetch": true,
+  "editor.formatOnSave": true,
+  "git.autofetch": true,
+  "githubPullRequests.ignoredPullRequestBranches": ["main"]
 }
