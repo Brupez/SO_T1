@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Create folders
+        run: |
+          mkdir sop
+          cd sop
+          mkdir aula1
+          mkdir aula2
+          mkdir teoricas
+          cd aula1
+          echo "whateverrrr" > whatever.txt
+          echo "help us" > help.txt
+          cd ../aula2
+          echo "yass queen" > slay.txt
+          cd ../teoricas
+          echo "nuno lau" > teorica.txt
+          echo "antonio borges" > pratica.txt
+          echo "aaaa" > a.txt
+          cd ../..
+
+      - name: Run spacecheck.sh (without parameters)
+        run: |
+          chmod +x ./spacecheck.sh
+          ./spacecheck.sh sop
