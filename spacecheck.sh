@@ -62,6 +62,10 @@ else
     du_output=$(sort -n <<<$du_output)
 fi
 
+if ! [ $outputLimit = 0 ]; then
+    du_output=$(head -n $outputLimit <<<$du_output)
+fi
+
 dateTime=$(date '+%Y%m%d')
 
 printf "${format}" "SIZE" "NAME $dateTime $var"
