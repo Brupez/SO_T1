@@ -51,7 +51,7 @@ format="%-8s %s\n"
 
 # Recursivelly get all directories and subdirectories, and their respective sizes
 if [ $(uname -s) = "Darwin" ]; then
-    du_output=$(du -A $directory | awk -v var="$format" '{printf var, $1 * 512, $2}')
+    du_output=$(du -A $directory)
 else
     du_output=$(du -b "$directory")
 fi
@@ -69,7 +69,7 @@ fi
 dateTime=$(date '+%Y%m%d')
 
 printf "${format}" "SIZE" "NAME $dateTime $var"
-printf "$format" "$du_output"
+printf "${format}" "$du_output"
 
 #echo "$output" | awk '{print $5, $9}'
 
