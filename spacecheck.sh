@@ -5,7 +5,7 @@ maxDate=$(date)   # Disabled
 outputLimit=0     # Disabled
 filter=".*"       # All files
 reverse=false     # Disabled
-minFileSize=0     # All files; in bytes
+minFolderSize=0   # All files; in bytes
 
 while getopts "ad:l:n:rs:" opt; do
     case "${opt}" in
@@ -25,7 +25,7 @@ while getopts "ad:l:n:rs:" opt; do
         reverse=true
         ;;
     s)
-        minFileSize=${OPTARG}
+        minFolderSize=${OPTARG}
         ;;
     *) ;;
     esac
@@ -56,10 +56,31 @@ else
     du_output=$(du -b "$directory")
 fi
 
+# Reverse the order of the output
 if [ $reverse = false ]; then
     du_output=$(sort -n -r <<<$du_output)
 else
     du_output=$(sort -n <<<$du_output)
+fi
+
+# Order by Name
+if [ $orderByName = true ]; then
+    du_output=$(du -d 1 | sort -k2 <<<$du_output)
+fi
+
+#Output limit
+if [ $outputLimit -ne 0 ]; then
+    du_output=$(du -d 1 | head -n $outputLimit <<<$du_output)
+fi
+
+#Max Date of modification
+#if [ $maxDate = '%m %d %H:%M' ]; then
+#    du_output=$(date -d $maxDate)
+#fi
+
+#minFolderSize
+if [ $minFolderSize -ge 0 ]; then
+    du_output=$(du -d 1 | awk -v minSize="$minFolderSize" '$1 >= minSize' <<<$du_output)
 fi
 
 dateTime=$(date '+%Y%m%d')
