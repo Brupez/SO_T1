@@ -5,7 +5,7 @@ maxDate=$(date)   # Disabled
 outputLimit=0     # Disabled
 filter=".*"       # All files
 reverse=false     # Disabled
-minDirSize=0   # All files; in bytes
+minDirSize=0      # All files; in bytes
 
 while getopts "ad:l:n:rs:" opt; do
     case "${opt}" in
@@ -51,24 +51,20 @@ fi
 # Set printf format
 format="%-8s %s\n"
 
-# Recursivelly get all directories and subdirectories, and their respective sizes
-if [ $(uname -s) = "Darwin" ]; then
-    output=$(du -A $directory)
-else
-    output=$(du -b "$directory")
-fi
-
-# Reverse the order of the output (-r)
-if [ $reverse = false ]; then
-    output=$(sort -n -r <<<$output)
-else
-    output=$(sort -n <<<$output)
-fi
+# Output format: Size, permissions, modification date, "name"
+output=$(find $directory -exec stat -f '%z %A %m "%N"' {} \+)
 
 # Order by name (-a)
-if [ $orderByName = true ]; then
-    output=$(sort -k2 <<<$output)
-fi
+# if [ $orderByName = true ]; then
+#     output=$(sort -k2 <<<$output)
+# fi
+
+# Reverse the order of the output (-r)
+# if [ $reverse = false ]; then
+#     output=$(sort -n -r <<<$output)
+# else
+#     output=$(sort -n <<<$output)
+# fi
 
 # Output limit (-l)
 if [ $outputLimit -ne 0 ]; then
@@ -76,9 +72,9 @@ if [ $outputLimit -ne 0 ]; then
 fi
 
 # Minimum directory size (-s)
-if [ $minDirSize -gt 0 ]; then
-    output=$(awk -v minSize="$minDirSize" '$1 >= minSize' <<<$output)
-fi
+# if [ $minDirSize -gt 0 ]; then
+#     output=$(awk -v minSize="$minDirSize" '$1 >= minSize' <<<$output)
+# fi
 
 dateTime=$(date '+%Y%m%d')
 
