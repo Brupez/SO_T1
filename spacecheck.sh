@@ -31,16 +31,18 @@ while getopts "ad:l:n:rs:" opt; do
     esac
 done
 
+# Store arguments and shift them
 var="$*"
 shift $((OPTIND - 1))
 
+# Argument validation
 if [ $# -lt 1 ]; then
     echo "Have to specify a folder: $0 <folder>"
     exit 1
 fi
 
+# Check if given path is a directory
 directory="$1"
-
 if [ ! -d "$directory" ]; then
     echo "'$directory' is not a Directory!"
     exit 1
@@ -51,7 +53,7 @@ format="%-8s %s\n"
 
 # Recursivelly get all directories and subdirectories, and their respective sizes
 if [ $(uname -s) = "Darwin" ]; then
-    du_output=$(du -A $directory | awk -v var="$format" '{printf var, $1 * 512, $2}')
+    du_output=$(du -A $directory)
 else
     du_output=$(du -b "$directory")
 fi
@@ -85,17 +87,6 @@ fi
 
 dateTime=$(date '+%Y%m%d')
 
+# Print
 printf "${format}" "SIZE" "NAME $dateTime $var"
-printf "$format" "$du_output"
-
-#echo "$output" | awk '{print $5, $9}'
-
-#for path in *; do
-# Check if path is a file
-#    if [ -f ${path} ]; then
-#       echo ${path}
-# Directory
-#else
-# echo ${path}/
-#fi
-#done
+printf "${format}" "$du_output"
