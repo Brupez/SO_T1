@@ -31,16 +31,18 @@ while getopts "ad:l:n:rs:" opt; do
     esac
 done
 
+# Store arguments and shift them
 var="$*"
 shift $((OPTIND - 1))
 
+# Argument validation
 if [ $# -lt 1 ]; then
     echo "Have to specify a folder: $0 <folder>"
     exit 1
 fi
 
+# Check if given path is a directory
 directory="$1"
-
 if [ ! -d "$directory" ]; then
     echo "'$directory' is not a Directory!"
     exit 1
@@ -56,29 +58,21 @@ else
     du_output=$(du -b "$directory")
 fi
 
+# Reverse option (-r)
 if [ $reverse = false ]; then
     du_output=$(sort -n -r <<<$du_output)
 else
     du_output=$(sort -n <<<$du_output)
 fi
 
+# Limit option (-l)
 if ! [ $outputLimit = 0 ]; then
     du_output=$(head -n $outputLimit <<<$du_output)
 fi
 
+# Get current date
 dateTime=$(date '+%Y%m%d')
 
+# Print
 printf "${format}" "SIZE" "NAME $dateTime $var"
 printf "${format}" "$du_output"
-
-#echo "$output" | awk '{print $5, $9}'
-
-#for path in *; do
-# Check if path is a file
-#    if [ -f ${path} ]; then
-#       echo ${path}
-# Directory
-#else
-# echo ${path}/
-#fi
-#done
