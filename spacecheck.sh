@@ -5,7 +5,7 @@ maxDate=$(date)   # Disabled
 outputLimit=0     # Disabled
 filter=".*"       # All files
 reverse=false     # Disabled
-minFolderSize=0   # All files; in bytes
+minDirSize=0   # All files; in bytes
 
 while getopts "ad:l:n:rs:" opt; do
     case "${opt}" in
@@ -25,7 +25,7 @@ while getopts "ad:l:n:rs:" opt; do
         reverse=true
         ;;
     s)
-        minFolderSize=${OPTARG}
+        minDirSize=${OPTARG}
         ;;
     *) ;;
     esac
@@ -80,9 +80,9 @@ fi
 #    du_output=$(date -d $maxDate)
 #fi
 
-#minFolderSize
-if [ $minFolderSize -ge 0 ]; then
-    du_output=$(du -d 1 | awk -v minSize="$minFolderSize" '$1 >= minSize' <<<$du_output)
+#minDirSize
+if [ $minDirSize -ge 0 ]; then
+    du_output=$(du -d 1 | awk -v minSize="$minDirSize" '$1 >= minSize' <<<$du_output)
 fi
 
 dateTime=$(date '+%Y%m%d')
