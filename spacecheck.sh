@@ -53,40 +53,35 @@ format="%-8s %s\n"
 
 # Recursivelly get all directories and subdirectories, and their respective sizes
 if [ $(uname -s) = "Darwin" ]; then
-    du_output=$(du -A $directory)
+    output=$(du -A $directory)
 else
-    du_output=$(du -b "$directory")
+    output=$(du -b "$directory")
 fi
 
-# Reverse the order of the output
+# Reverse the order of the output (-r)
 if [ $reverse = false ]; then
-    du_output=$(sort -n -r <<<$du_output)
+    output=$(sort -n -r <<<$output)
 else
-    du_output=$(sort -n <<<$du_output)
+    output=$(sort -n <<<$output)
 fi
 
-# Order by Name
+# Order by name (-a)
 if [ $orderByName = true ]; then
-    du_output=$(du -d 1 | sort -k2 <<<$du_output)
+    output=$(sort -k2 <<<$output)
 fi
 
-#Output limit
+# Output limit (-l)
 if [ $outputLimit -ne 0 ]; then
-    du_output=$(du -d 1 | head -n $outputLimit <<<$du_output)
+    output=$(head -n $outputLimit <<<$output)
 fi
 
-#Max Date of modification
-#if [ $maxDate = '%m %d %H:%M' ]; then
-#    du_output=$(date -d $maxDate)
-#fi
-
-#minDirSize
-if [ $minDirSize -ge 0 ]; then
-    du_output=$(du -d 1 | awk -v minSize="$minDirSize" '$1 >= minSize' <<<$du_output)
+# Minimum directory size (-s)
+if [ $minDirSize -gt 0 ]; then
+    output=$(awk -v minSize="$minDirSize" '$1 >= minSize' <<<$output)
 fi
 
 dateTime=$(date '+%Y%m%d')
 
 # Print
 printf "${format}" "SIZE" "NAME $dateTime $var"
-printf "${format}" "$du_output"
+printf "${format}" "$output"
