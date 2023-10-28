@@ -55,7 +55,7 @@ format="%-10s %s\n"
 if [ $(uname -s) = "Darwin" ]; then
     mapfile -t fileInfo < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk '{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}')
 else
-    mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%z\t%A\t%m\t%N\n' {} \+)
+    mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+)
 fi
 declare -A output
 
