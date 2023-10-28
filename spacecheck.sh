@@ -49,12 +49,13 @@ if [ ! -d "$directory" ]; then
 fi
 
 # Set printf format
-format="%-8s %s\n"
+format="%-10s %s\n"
 
 # Get stats for each file or directory
-mapfile -t output < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk '{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}')
+mapfile -t fileInfo < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk '{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}')
+declare -A output
 
-for line in "${output[@]}"; do
+for line in "${fileInfo[@]}"; do
     # lineArray is (re)assigned for each line.
     IFS=$'\t' read -r -a lineArray <<<"$line"
 
@@ -63,6 +64,9 @@ for line in "${output[@]}"; do
     # lineArray[1]: Permissions ("%d%d%d" format)
     # lineArray[2]: Modification date (in Unix seconds)
     # lineArray[3]: Name
+
+    # Assign size to name in output associative array
+    output["${lineArray[3]}"]="${lineArray[0]}"
 done
 
 # Order by name (-a)
@@ -91,4 +95,7 @@ dateTime=$(date '+%Y%m%d')
 
 # Print
 printf "${format}" "SIZE" "NAME $dateTime $var"
-# printf "${format}" "$output"
+for name in "${!output[@]}"; do
+    size="${output[$name]}"
+    printf "${format}" "$size" "$name"
+done
