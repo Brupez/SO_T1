@@ -51,8 +51,19 @@ fi
 # Set printf format
 format="%-8s %s\n"
 
-# Output format: Size, permissions, modification date, "name"
-output=$(find $directory -exec stat -f '%z %A %m "%N"' {} \+)
+# Get stats for each file or directory
+mapfile -t output < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk '{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}')
+
+for line in "${output[@]}"; do
+    # lineArray is (re)assigned for each line.
+    IFS=$'\t' read -r -a lineArray <<<"$line"
+
+    # TODO: Start iterating from here.
+    # lineArray[0]: Size
+    # lineArray[1]: Permissions ("%d%d%d" format)
+    # lineArray[2]: Modification date (in Unix seconds)
+    # lineArray[3]: Name
+done
 
 # Order by name (-a)
 # if [ $orderByName = true ]; then
@@ -80,4 +91,4 @@ dateTime=$(date '+%Y%m%d')
 
 # Print
 printf "${format}" "SIZE" "NAME $dateTime $var"
-printf "${format}" "$output"
+# printf "${format}" "$output"
