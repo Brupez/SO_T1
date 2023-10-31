@@ -55,7 +55,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk '{printf "%s\t%s\t%s\t%s\n", $1, $2, $3, substr($0, index($0,$4))}')
+        mapfile -t fileInfo < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk 'dirSlash=-d "substr($0, index($0,$4))" ? "/" : ""; printf "%s\t%s\t%s\t%sdirSlash\n", $1, $2, $3, substr($0, index($0,$4))')
     else
         mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+)
     fi
@@ -70,6 +70,8 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[1]: Permissions ("%d%d%d" format)
         # lineArray[2]: Modification date (in Unix seconds)
         # lineArray[3]: Name
+
+        printf "%s\t%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}" "${lineArray[3]}"
 
         # Assign size to name in output associative array
         output["${lineArray[3]}"]="${lineArray[0]}"
