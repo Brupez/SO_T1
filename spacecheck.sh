@@ -83,6 +83,11 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         output["${lineArray[3]}"]=$((output["${lineArray[3]}"] + "${lineArray[0]}"))
     done
 
+    declare -a keyValueArray
+    for key in "${!output[@]}"; do
+        keyValueArray+=("$(printf "${format}" "${output[$key]}" "$key")")
+    done
+
     dateTime=$(date '+%Y%m%d')
 
     # Print header
@@ -90,21 +95,18 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
     # Order by name (-a)
     if [ $orderByName = true ]; then
-        for key in $(echo "${!output[@]}" | tr ' ' '\n' | sort); do
-            printf "${format}" "${output[$key]}" "$key"
-        done
+        if [ $reverse = true ]; then
+            printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2r
+        else
+            printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2
+        fi
     else
-        for key in "${!output[@]}"; do
-            printf "${format}" "${output[$key]}" "$key"
-        done | sort -n -k1
+        if [ $reverse = true ]; then
+            printf "%s\n" "${keyValueArray[@]}" | sort -r -n -k1
+        else
+            printf "%s\n" "${keyValueArray[@]}" | sort -n -k1
+        fi
     fi
-
-    # Reverse the order of the output (-r)
-    # if [ $reverse = false ]; then
-    #     output=$(sort -n -r <<<$output)
-    # else
-    #     output=$(sort -n <<<$output)
-    # fi
 
     # Output limit (-l)
     if [ $outputLimit -ne 0 ]; then
