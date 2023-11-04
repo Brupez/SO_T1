@@ -13,7 +13,11 @@ while getopts "ad:l:n:rs:" opt; do
         orderByName=true
         ;;
     d)
-        maxDate=${OPTARG}
+        if [[ $(uname -s) == "Darwin" ]]; then
+            maxDate=$(gdate -d "${OPTARG}" +%s)
+        else
+            maxDate=$(date -d "${OPTARG}" +%s)
+        fi
         ;;
     l)
         outputLimit=${OPTARG}
