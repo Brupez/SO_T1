@@ -100,7 +100,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     # Print header
     printf "${format}" "SIZE" "NAME $dateTime $var"
 
-    # Order by name (-a)
+    # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
         if [ $reverse = true ]; then
             printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2r
@@ -119,11 +119,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     if [ $outputLimit -ne 0 ]; then
         output=$(head -n $outputLimit <<<$output)
     fi
-
-    # Minimum directory size (-s)
-    # if [ $minDirSize -gt 0 ]; then
-    #     output=$(awk -v minSize="$minDirSize" '$1 >= minSize' <<<$output)
-    # fi
 else
     echo "Permission denied: cannot read or execute $diretory"
 fi
