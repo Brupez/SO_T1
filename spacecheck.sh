@@ -65,16 +65,22 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray is (re)assigned for each line.
         IFS=$'\t' read -r -a lineArray <<<"$line"
 
-        # TODO: Start iterating from here.
+        # Array structure
         # lineArray[0]: Size
         # lineArray[1]: Permissions ("%d%d%d" format)
         # lineArray[2]: Modification date (in Unix seconds)
         # lineArray[3]: Name
 
-        printf "%s\t%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}" "${lineArray[3]}"
+        if [[ -d "${lineArray[3]}" ]]; then
+            lineArray[3]="${lineArray[3]}"
+        else
+            lineArray[3]="${lineArray[3]%/*}"
+        fi
+
+        # printf "%s\t%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}" "${lineArray[3]}"
 
         # Assign size to name in output associative array
-        output["${lineArray[3]}"]="${lineArray[0]}"
+        output["${lineArray[3]}"]=$((output["${lineArray[3]}"] + "${lineArray[0]}"))
     done
 
     # Order by name (-a)
