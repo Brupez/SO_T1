@@ -55,8 +55,10 @@ fi
 # Set printf format
 format="%-10s %s\n"
 
-if [[ -r "$directory" && -x "$directory" ]]; then
+# Print header
+printf "${format}" "SIZE" "NAME $dateTime $var"
 
+if [[ -r "$directory" && -x "$directory" ]]; then
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
         mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%a\t%Z\t%n\n' {} \+)
@@ -101,9 +103,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
     dateTime=$(date '+%Y%m%d')
 
-    # Print header
-    printf "${format}" "SIZE" "NAME $dateTime $var"
-
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
         if [ $reverse = true ]; then
@@ -125,5 +124,5 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         echo "$output"
     fi
 else
-    echo "Permission denied: cannot read or execute $diretory"
+    printf "${format}" "NA" "$directory"
 fi
