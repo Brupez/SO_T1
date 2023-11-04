@@ -83,10 +83,21 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         output["${lineArray[3]}"]=$((output["${lineArray[3]}"] + "${lineArray[0]}"))
     done
 
+    dateTime=$(date '+%Y%m%d')
+
+    # Print header
+    printf "${format}" "SIZE" "NAME $dateTime $var"
+
     # Order by name (-a)
-    # if [ $orderByName = true ]; then
-    #     output=$(sort -k2 <<<$output)
-    # fi
+    if [ $orderByName = true ]; then
+        for key in $(echo "${!output[@]}" | tr ' ' '\n' | sort); do
+            printf "${format}" "${output[$key]}" "$key"
+        done
+    else
+        for key in "${!output[@]}"; do
+            printf "${format}" "${output[$key]}" "$key"
+        done | sort -n -k1
+    fi
 
     # Reverse the order of the output (-r)
     # if [ $reverse = false ]; then
@@ -104,16 +115,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     # if [ $minDirSize -gt 0 ]; then
     #     output=$(awk -v minSize="$minDirSize" '$1 >= minSize' <<<$output)
     # fi
-
-    dateTime=$(date '+%Y%m%d')
-
-    # Print
-    printf "${format}" "SIZE" "NAME $dateTime $var"
-    for name in "${!output[@]}"; do
-        size="${output[$name]}"
-        printf "${format}" "$size" "$name"
-    done
-
 else
     echo "Permission denied: cannot read or execute $diretory"
 fi
