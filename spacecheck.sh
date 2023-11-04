@@ -63,7 +63,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     else
         mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+)
     fi
-    declare -A output
+    declare -A sizeNameArray
 
     for line in "${fileInfo[@]}"; do
         # lineArray is (re)assigned for each line.
@@ -90,13 +90,13 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # printf "%s\t%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}" "${lineArray[3]}"
 
         # Assign size to name in output associative array
-        output["${lineArray[3]}"]=$((output["${lineArray[3]}"] + "${lineArray[0]}"))
+        sizeNameArray["${lineArray[3]}"]=$((sizeNameArray["${lineArray[3]}"] + "${lineArray[0]}"))
     done
 
     # Spaghetti code to workaround sort
     declare -a keyValueArray
-    for key in "${!output[@]}"; do
-        keyValueArray+=("$(printf "${format}" "${output[$key]}" "$key")")
+    for key in "${!sizeNameArray[@]}"; do
+        keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
     done
 
     dateTime=$(date '+%Y%m%d')
@@ -107,21 +107,22 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
         if [ $reverse = true ]; then
-            printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2r
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2r)
         else
-            printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2)
         fi
     else
         if [ $reverse = true ]; then
-            printf "%s\n" "${keyValueArray[@]}" | sort -r -n -k1
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -r -n -k1)
         else
-            printf "%s\n" "${keyValueArray[@]}" | sort -n -k1
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -n -k1)
         fi
     fi
 
-    # Output limit (-l)
-    if [ $outputLimit -ne 0 ]; then
-        output=$(head -n $outputLimit <<<$output)
+    if [ $outputLimit -gt 0 ]; then
+        echo "$output" | head -n $outputLimit
+    else
+        echo "$output"
     fi
 else
     echo "Permission denied: cannot read or execute $diretory"
