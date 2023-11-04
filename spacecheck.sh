@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-orderByName=false # Disabled
-maxDate=$(date)   # Disabled
-outputLimit=0     # Disabled
-filter=".*"       # All files
-reverse=false     # Disabled
-minDirSize=0      # All files; in bytes
+orderByName=false   # Disabled
+maxDate=$(date +%s) # Disabled
+outputLimit=0       # Disabled
+filter=".*"         # All files
+reverse=false       # Disabled
+minDirSize=0        # All files; in bytes
 
 while getopts "ad:l:n:rs:" opt; do
     case "${opt}" in
@@ -71,6 +71,12 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[2]: Modification date (in Unix seconds)
         # lineArray[3]: Name
 
+        # Ignore file if conditions are not met
+        if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[2]}" -gt $maxDate ]] || ! [[ "${lineArray[3]}" =~ ${filter} ]]; then
+            continue
+        fi
+
+        # Get file path
         if [[ -d "${lineArray[3]}" ]]; then
             lineArray[3]="${lineArray[3]}"
         else
@@ -83,6 +89,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         output["${lineArray[3]}"]=$((output["${lineArray[3]}"] + "${lineArray[0]}"))
     done
 
+    # Spaghetti code to workaround sort
     declare -a keyValueArray
     for key in "${!output[@]}"; do
         keyValueArray+=("$(printf "${format}" "${output[$key]}" "$key")")
