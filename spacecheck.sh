@@ -55,7 +55,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec stat -f '%z %A %m %N' {} \+ | awk 'dirSlash=-d "substr($0, index($0,$4))" ? "/" : ""; printf "%s\t%s\t%s\t%sdirSlash\n", $1, $2, $3, substr($0, index($0,$4))')
+        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%a\t%Z\t%n\n' {} \+)
     else
         mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+)
     fi
