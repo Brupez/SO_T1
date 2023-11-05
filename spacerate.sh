@@ -68,5 +68,7 @@ done <&4
 for i in "${!file1Array[@]}"; do
     if [[ -n "${file2Array[$i]}" ]]; then
         printf "${format}" "$((${file2Array[$i]} - ${file1Array[$i]}))" "$i"
+    else
+        printf "${format}" "-${file1Array[$i]}" "$i REMOVED"
     fi
 done
