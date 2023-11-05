@@ -61,9 +61,9 @@ printf "${format}" "SIZE" "NAME $dateTime $var"
 if [[ -r "$directory" && -x "$directory" ]]; then
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%a\t%Z\t%n\n' {} \+)
+        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%a\t%Z\t%n\n' {} \+ 2>/dev/null)
     else
-        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+)
+        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+ 2>/dev/null)
     fi
     declare -A sizeNameArray
 
@@ -77,6 +77,11 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[2]: Modification date (in Unix seconds)
         # lineArray[3]: Name
 
+        if ! [[ -r "${lineArray[3]}" ]]; then
+            sizeNameArray["${lineArray[3]}"]="NA"
+            continue
+        fi
+
         # Ignore file if conditions are not met
         if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[2]}" -gt $maxDate ]] || ! [[ "${lineArray[3]}" =~ ${filter} ]]; then
             continue
@@ -88,8 +93,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         else
             lineArray[3]="${lineArray[3]%/*}"
         fi
-
-        # printf "%s\t%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}" "${lineArray[3]}"
 
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[3]}"]=$((sizeNameArray["${lineArray[3]}"] + "${lineArray[0]}"))
