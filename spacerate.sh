@@ -3,7 +3,7 @@
 orderByName=false # Disabled
 reverse=false     # Disabled
 
-while getopts "ad:l:n:rs:" opt; do
+while getopts "ar" opt; do
     case "${opt}" in
     a)
         orderByName=true
@@ -49,11 +49,12 @@ if ! [ -r "$file2" ]; then
     exit 1
 fi
 
-# Set printf format
-format="%-10s %s\n"
-
 # Print header
-printf "${format}" "SIZE" "NAME"
+printf "%-10s %s\n" "SIZE" "NAME"
+
+# Set printf format
+# Includes a : to split the two columns, so that sort works fine
+format="%-10s:%s\n"
 
 # Read file1
 exec 3<"$file1"     # "Open" the file
@@ -73,19 +74,39 @@ while read -r size path; do
     file2Array["$path"]=$size
 done <&4
 
+# Create array with differences between two files
+declare -a diffArray
+
 # Check file1 array against file2 one
 # For now, file1 will be considered as "old" and file2 as "new"
 for i in "${!file1Array[@]}"; do
     if [[ -n "${file2Array[$i]}" ]]; then
-        printf "${format}" "$((${file2Array[$i]} - ${file1Array[$i]}))" "$i"
+        diffArray+=("$(printf "${format}" "$((${file2Array[$i]} - ${file1Array[$i]}))" "$i")")
     else
-        printf "${format}" "-${file1Array[$i]}" "$i REMOVED"
+        diffArray+=("$(printf "${format}" "-${file1Array[$i]}" "$i REMOVED")")
     fi
 done
 
 # Check file2 array against file1 one
 for i in "${!file2Array[@]}"; do
     if ! [[ -n "${file1Array[$i]}" ]]; then
-        printf "${format}" "${file2Array[$i]}" "$i NEW"
+        diffArray+=("$(printf "${format}" "${file2Array[$i]}" "$i NEW")")
     fi
 done
+
+# Output
+if [ $orderByName = true ]; then
+    if [ $reverse = true ]; then
+        output=$(printf "%s\n" "${diffArray[@]}" | sort -k2 -t ':' -r)
+    else
+        output=$(printf "%s\n" "${diffArray[@]}" | sort -k2 -t ':')
+    fi
+else
+    if [ $reverse = true ]; then
+        output=$(printf "%s\n" "${diffArray[@]}" | sort -k1 -n)
+    else
+        output=$(printf "%s\n" "${diffArray[@]}" | sort -k1 -n -r)
+    fi
+fi
+
+echo "${output//:/ }"
