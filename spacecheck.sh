@@ -39,14 +39,14 @@ done
 var="$*"
 shift $((OPTIND - 1))
 
-# Argument validation
+# Argument validation and directory assignment
 if [ $# -lt 1 ]; then
-    echo "Have to specify a folder: $0 <folder>"
-    exit 1
+    directory="."
+else
+    directory="$1"
 fi
 
-# Check if given path is a directory
-directory="$1"
+# Check if path is a directory
 if [ ! -d "$directory" ]; then
     echo "'$directory' is not a Directory!"
     exit 1
