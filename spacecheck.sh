@@ -55,6 +55,9 @@ fi
 # Set printf format
 format="%-10s %s\n"
 
+# Get current date
+dateTime=$(date '+%Y%m%d')
+
 # Print header
 printf "${format}" "SIZE" "NAME $dateTime $var"
 
@@ -109,8 +112,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     for key in "${!sizeNameArray[@]}"; do
         keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
     done
-
-    dateTime=$(date '+%Y%m%d')
 
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
