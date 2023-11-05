@@ -61,9 +61,9 @@ printf "${format}" "SIZE" "NAME $dateTime $var"
 if [[ -r "$directory" && -x "$directory" ]]; then
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%a\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
     else
-        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%a\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
     fi
     declare -A sizeNameArray
 
@@ -73,29 +73,28 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
         # Array structure
         # lineArray[0]: Size
-        # lineArray[1]: Permissions ("%d%d%d" format)
-        # lineArray[2]: Modification date (in Unix seconds)
-        # lineArray[3]: Name
+        # lineArray[1]: Modification date (in Unix seconds)
+        # lineArray[2]: Name
 
-        if ! [[ -r "${lineArray[3]}" ]]; then
-            sizeNameArray["${lineArray[3]}"]="NA"
+        if ! [[ -r "${lineArray[2]}" ]]; then
+            sizeNameArray["${lineArray[2]}"]="NA"
             continue
         fi
 
         # Ignore file if conditions are not met
-        if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[2]}" -gt $maxDate ]] || ! [[ "${lineArray[3]}" =~ ${filter} ]]; then
+        if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
             continue
         fi
 
         # Get file path
-        if [[ -d "${lineArray[3]}" ]]; then
-            lineArray[3]="${lineArray[3]}"
+        if [[ -d "${lineArray[2]}" ]]; then
+            lineArray[2]="${lineArray[2]}"
         else
-            lineArray[3]="${lineArray[3]%/*}"
+            lineArray[2]="${lineArray[2]%/*}"
         fi
 
         # Assign size to name in output associative array
-        sizeNameArray["${lineArray[3]}"]=$((sizeNameArray["${lineArray[3]}"] + "${lineArray[0]}"))
+        sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
     done
 
     # Spaghetti code to workaround sort
@@ -121,6 +120,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         fi
     fi
 
+    # Print and set output limit
     if [ $outputLimit -gt 0 ]; then
         echo "$output" | head -n $outputLimit
     else
