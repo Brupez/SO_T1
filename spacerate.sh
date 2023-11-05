@@ -72,3 +72,10 @@ for i in "${!file1Array[@]}"; do
         printf "${format}" "-${file1Array[$i]}" "$i REMOVED"
     fi
 done
+
+# Check file2 array against file1 one
+for i in "${!file2Array[@]}"; do
+    if ! [[ -n "${file1Array[$i]}" ]]; then
+        printf "${format}" "${file2Array[$i]}" "$i NEW"
+    fi
+done
