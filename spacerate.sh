@@ -48,13 +48,17 @@ printf "${format}" "SIZE" "NAME"
 # Read file1
 exec 3<"$file1" # "Open" the file
 read -r header1 <&3 # Get the header
-while read -r line; do
-    echo "$line"
+
+declare -A file1Array
+while read -r size path; do
+    file1Array["$path"]=$size
 done <&3
 
 # Read file2
 exec 4<"$file2"
 read -r header2 <&4
-while read -r line; do
-    echo "$line"
+
+declare -A file2Array
+while read -r size path; do
+    file2Array["$path"]=$size
 done <&4
