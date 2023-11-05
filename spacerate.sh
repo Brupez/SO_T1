@@ -26,16 +26,16 @@ if [ $# -lt 2 ]; then
 fi
 
 # File validation
-filePath1="$1"
-filePath2="$2"
+file1="$1"
+file2="$2"
 
-if ! [ -f "$filePath1" ]; then
-    echo "$filePath1 is not a file."
+if ! [ -f "$file1" ]; then
+    echo "$file1 is not a file."
     exit 1
 fi
 
-if ! [ -f "$filePath2" ]; then
-    echo "$filePath2 is not a file."
+if ! [ -f "$file2" ]; then
+    echo "$file2 is not a file."
     exit 1
 fi
 
