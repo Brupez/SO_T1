@@ -71,8 +71,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray is (re)assigned for each line.
         IFS=$'\t' read -r -a lineArray <<<"$line"
 
-        printf "%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}"
-
         # Array structure
         # lineArray[0]: Size
         # lineArray[1]: Modification date (in Unix seconds)
@@ -98,11 +96,12 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
 
-        # Add size to parent directory
-        parentDir="${lineArray[2]%/*}"
-        if [[ "$parentDir" != "${lineArray[2]}" ]]; then
+        # Add size to all parent directories
+        parentDir="${lineArray[2]}"
+        while [[ "$parentDir" != "$directory" ]]; do
+            parentDir="${parentDir%/*}"
             sizeNameArray["$parentDir"]=$((sizeNameArray["$parentDir"] + "${lineArray[0]}"))
-        fi
+        done
     done
 
     # Spaghetti code to workaround sort
