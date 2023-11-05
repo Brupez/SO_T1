@@ -16,24 +16,35 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Create folders
+        # touch -d "modificationDate"
+        # dd to set size
         run: |
           mkdir sop
           cd sop
+
           mkdir aula1
           mkdir aula2
           mkdir teoricas
+
           cd aula1
           echo "whateverrrr" > whatever.txt
+          mkdir hmmm
+          cd hmmm
           echo "help us" > help.txt
-          cd ../aula2
+
+          cd ../../aula2
           echo "yass queen" > slay.txt
+
           cd ../teoricas
           echo "nuno lau" > teorica.txt
           echo "antonio borges" > pratica.txt
           echo "aaaa" > a.txt
+          
           cd ../..
 
       - name: Run spacecheck.sh (without parameters)
         run: |
           chmod +x ./spacecheck.sh
           ./spacecheck.sh sop
+      
+      # Diff
