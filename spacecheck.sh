@@ -97,6 +97,12 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
+
+        # Add size to parent directory
+        parentDir="${lineArray[2]%/*}"
+        if [[ "$parentDir" != "${lineArray[2]}" ]]; then
+            sizeNameArray["$parentDir"]=$((sizeNameArray["$parentDir"] + "${lineArray[0]}"))
+        fi
     done
 
     # Spaghetti code to workaround sort
