@@ -46,7 +46,7 @@ format="%-10s %s\n"
 printf "${format}" "SIZE" "NAME"
 
 # Read file1
-exec 3<"$file1" # "Open" the file
+exec 3<"$file1"     # "Open" the file
 read -r header1 <&3 # Get the header
 
 declare -A file1Array
@@ -62,3 +62,11 @@ declare -A file2Array
 while read -r size path; do
     file2Array["$path"]=$size
 done <&4
+
+# Check file1 array against file2 one
+# For now, file1 will be considered as "old" and file2 as "new"
+for i in "${!file1Array[@]}"; do
+    if [[ -n "${file2Array[$i]}" ]]; then
+        printf "${format}" "$((${file2Array[$i]} - ${file1Array[$i]}))" "$i"
+    fi
+done
