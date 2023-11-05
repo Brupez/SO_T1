@@ -44,3 +44,17 @@ format="%-10s %s\n"
 
 # Print header
 printf "${format}" "SIZE" "NAME"
+
+# Read file1
+exec 3<"$file1" # "Open" the file
+read -r header1 <&3 # Get the header
+while read -r line; do
+    echo "$line"
+done <&3
+
+# Read file2
+exec 4<"$file2"
+read -r header2 <&4
+while read -r line; do
+    echo "$line"
+done <&4
