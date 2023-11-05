@@ -71,6 +71,8 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray is (re)assigned for each line.
         IFS=$'\t' read -r -a lineArray <<<"$line"
 
+        printf "%s\t%s\t%s\n" "${lineArray[0]}" "${lineArray[1]}" "${lineArray[2]}"
+
         # Array structure
         # lineArray[0]: Size
         # lineArray[1]: Modification date (in Unix seconds)
