@@ -34,8 +34,18 @@ if ! [ -f "$file1" ]; then
     exit 1
 fi
 
+if ! [ -r "$file1" ]; then
+    echo "$file1 doesn't have read permissions."
+    exit 1
+fi
+
 if ! [ -f "$file2" ]; then
     echo "$file2 is not a file."
+    exit 1
+fi
+
+if ! [ -r "$file2" ]; then
+    echo "$file2 doesn't have read permissions."
     exit 1
 fi
 
