@@ -116,15 +116,15 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
         if [ $reverse = true ]; then
-            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2r)
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -k2 -t '/' -r)
         else
-            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -t '/' -k2)
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -k2 -t '/')
         fi
     else
         if [ $reverse = true ]; then
-            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -r -n -k1)
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -k1 -n)
         else
-            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -n -k1)
+            output=$(printf "%s\n" "${keyValueArray[@]}" | sort -k1 -n -r)
         fi
     fi
 
