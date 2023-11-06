@@ -62,13 +62,12 @@ read -r header1 <&3
 exec 4<"$file2"
 read -r header2 <&4
 
-# Check if command arguments are the same
-# TODO: Ignore reverse or order by name
-args1=$(awk '{$1=$2=$3=""; print $0}' <<<"$header1")
-args2=$(awk '{$1=$2=$3=""; print $0}' <<<"$header2")
+# Check if command arguments are the same (ignores order)
+args1=$(awk '{$1=$2=$3=""; gsub(/-r|-a|-ar|-ra| /, ""); print $0}' <<<"$header1")
+args2=$(awk '{$1=$2=$3=""; gsub(/-r|-a|-ar|-ra| /, ""); print $0}' <<<"$header2")
 
 if [ "$args1" != "$args2" ]; then
-    echo "Program arguments should be the same."
+    echo "Program arguments should be the same in both files."
     exit 1
 fi
 
