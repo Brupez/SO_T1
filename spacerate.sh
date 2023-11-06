@@ -56,18 +56,29 @@ printf "%-10s %s\n" "SIZE" "NAME"
 # Includes a : to split the two columns, so that sort works fine
 format="%-10s:%s\n"
 
-# Read file1
-exec 3<"$file1"     # "Open" the file
-read -r header1 <&3 # Get the header
+# Open files and read respective headers
+exec 3<"$file1"
+read -r header1 <&3
+exec 4<"$file2"
+read -r header2 <&4
 
+# Get two dates
+date1=$(awk '{print $3}' <<<"$header1")
+date2=$(awk '{print $3}' <<<"$header2")
+
+# Swap files if file 1 is newer than file 2
+if [ $date1 -gt $date2 ]; then
+    exec 3<"$file2"
+    read -r header1 <&3
+    exec 4<"$file1"
+    read -r header2 <&4
+fi
+
+# Read file contents
 declare -A file1Array
 while read -r size path; do
     file1Array["$path"]=$size
 done <&3
-
-# Read file2
-exec 4<"$file2"
-read -r header2 <&4
 
 declare -A file2Array
 while read -r size path; do
