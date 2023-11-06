@@ -62,6 +62,16 @@ read -r header1 <&3
 exec 4<"$file2"
 read -r header2 <&4
 
+# Check if command arguments are the same
+# TODO: Ignore reverse or order by name
+args1=$(awk '{$1=$2=$3=""; print $0}' <<<"$header1")
+args2=$(awk '{$1=$2=$3=""; print $0}' <<<"$header2")
+
+if [ "$args1" != "$args2" ]; then
+    echo "Program arguments should be the same."
+    exit 1
+fi
+
 # Get two dates
 date1=$(awk '{print $3}' <<<"$header1")
 date2=$(awk '{print $3}' <<<"$header2")
