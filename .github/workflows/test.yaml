@@ -16,35 +16,64 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Create folders
-        # touch -d "modificationDate"
-        # dd to set size
         run: |
           mkdir sop
-          cd sop
 
-          mkdir aula1
-          mkdir aula2
-          mkdir teoricas
+          for i in {1..5}
+          do
+            mkdir -p sop/subdir$i
+          done
 
-          cd aula1
-          echo "whateverrrr" > whatever.txt
-          mkdir hmmm
-          cd hmmm
-          echo "help us" > help.txt
+          for i in {1..5}
+          do
+            for j in {1..5}
+            do
+              touch sop/subdir$i/file$j.txt
+            done
+          done
 
-          cd ../../aula2
-          echo "yass queen" > slay.txt
+          touch sop/json1.json
+          touch sop/json2.json
 
-          cd ../teoricas
-          echo "nuno lau" > teorica.txt
-          echo "antonio borges" > pratica.txt
-          echo "aaaa" > a.txt
-          
-          cd ../..
-
-      - name: Run spacecheck.sh (without parameters)
+      - name: Modify some files
         run: |
-          chmod +x ./spacecheck.sh
-          ./spacecheck.sh sop
-      
-      # Diff
+          touch -d '2023-01-01' sop/subdir1/file1.txt
+          touch -d '2023-06-01' sop/subdir2/file1.txt
+          touch -d '2022-11-01' sop/subdir3/file1.txt
+          
+          dd if=/dev/zero of=sop/subdir3/file2.txt bs=1M count=1
+          dd if=/dev/zero of=sop/subdir4/file2.txt bs=1M count=2
+          dd if=/dev/zero of=sop/subdir5/file2.txt bs=1M count=3
+
+          dd if=/dev/zero of=sop/json2.json bs=1M count=3
+          touch -d '2022-11-01' sop/json2.json
+
+      - name: Set execution permissions
+        run: chmod +x ./spacecheck.sh
+
+      - name: Run spacecheck.sh, with no parameters
+        run: ./spacecheck.sh sop
+
+      - name: Run spacecheck.sh, reversed
+        run: ./spacecheck.sh -r sop
+
+      - name: Run spacecheck.sh, ordered by name
+        run: ./spacecheck.sh -a sop
+
+      - name: Run spacecheck.sh, ordered by name and reversed
+        run: ./spacecheck.sh -ar sop
+
+      - name: Run spacecheck.sh, with limited output
+        run: ./spacecheck.sh -l 2 sop
+
+      - name: Run spacecheck.sh, filtered by date
+        run: ./spacecheck.sh -d "Dec 1 2022 10:00" sop
+
+      - name: Run spacecheck.sh, filtered by json files
+        run: ./spacecheck.sh -n ".*json" sop
+
+      - name: Run spacecheck.sh, filtered by minimum size
+        run: ./spacecheck.sh -s 8192 sop
+
+      - name: Run spacecheck.sh, filtered by everything
+        run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 8192 sop
