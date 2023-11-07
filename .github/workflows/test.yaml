@@ -73,7 +73,7 @@ jobs:
         run: ./spacecheck.sh -n ".*json" sop
 
       - name: Run spacecheck.sh, filtered by minimum size
-        run: ./spacecheck.sh -s 200000 sop
+        run: ./spacecheck.sh -s 2000000 sop
 
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 8192 sop
