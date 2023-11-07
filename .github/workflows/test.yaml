@@ -77,3 +77,35 @@ jobs:
 
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 2000000 sop
+      
+      - name: Create files for spacerate.sh
+        run: |
+          echo "SIZE       NAME 20231104 sop
+          NA         sop/main/if what
+          64         sop/main/what if
+          64         sop/whatever
+          6372       sop/main
+          13635108   sop
+          11         a
+          " > sr1.txt
+
+          echo "SIZE       NAME 20231105 -r sop
+          NA         sop/main/if what
+          64         sop/main/what if
+          64         sop/whatever
+          6408       sop/main
+          12780      sop
+          1234       b
+          " > sr2.txt
+      
+      - name: Run spacerate.sh, with no parameters
+        run: ./spacerate.sh sr1.txt sr2.txt
+      
+      - name: Run spacerate.sh, reversed
+        run: ./spacerate.sh -r sr1.txt sr2.txt
+      
+      - name: Run spacerate.sh, ordered by name
+        run: ./spacerate.sh -a sr1.txt sr2.txt
+      
+      - name: Run spacerate.sh, ordered by name and reversed
+        run: ./spacerate.sh -ar sr1.txt sr2.txt
