@@ -37,16 +37,16 @@ jobs:
 
       - name: Modify some files
         run: |
-          touch -d '2023-01-01' sop/subdir1/file1.txt
-          touch -d '2023-06-01' sop/subdir2/file1.txt
-          touch -d '2022-11-01' sop/subdir3/file1.txt
-          
+          touch -a -m -t 202301010000.00 sop/subdir1/file1.txt
+          touch -a -m -t 202306010000.00 sop/subdir2/file1.txt
+          touch -a -m -t 202211010000.00 sop/subdir3/file1.txt
+
           dd if=/dev/zero of=sop/subdir3/file2.txt bs=1M count=1
           dd if=/dev/zero of=sop/subdir4/file2.txt bs=1M count=2
           dd if=/dev/zero of=sop/subdir5/file2.txt bs=1M count=3
 
           dd if=/dev/zero of=sop/json2.json bs=1M count=3
-          touch -d '2022-11-01' sop/json2.json
+          touch -a -m -t 202211010000.00 sop/json2.json
 
       - name: Set execution permissions
         run: chmod +x ./spacecheck.sh
@@ -73,7 +73,7 @@ jobs:
         run: ./spacecheck.sh -n ".*json" sop
 
       - name: Run spacecheck.sh, filtered by minimum size
-        run: ./spacecheck.sh -s 8192 sop
+        run: ./spacecheck.sh -s 100000 sop
 
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 8192 sop
