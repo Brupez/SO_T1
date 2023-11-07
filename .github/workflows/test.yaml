@@ -77,11 +77,14 @@ jobs:
 
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 2000000 sop
-  
+
   test_spacerate:
     name: Test spacerate.sh
     runs-on: ubuntu-latest
     steps:
+      - name: Setup repo
+        uses: actions/checkout@v4.1.1
+
       - name: Create base files
         run: |
           echo "SIZE       NAME 20231104 sop
@@ -99,15 +102,18 @@ jobs:
           6408       sop/main
           12780      sop
           1234       b" > sr2.txt
-      
+
+      - name: Set execution permissions
+        run: chmod +x ./spacerate.sh
+
       - name: Run spacerate.sh, with no parameters
         run: ./spacerate.sh sr1.txt sr2.txt
-      
+
       - name: Run spacerate.sh, reversed
         run: ./spacerate.sh -r sr1.txt sr2.txt
-      
+
       - name: Run spacerate.sh, ordered by name
         run: ./spacerate.sh -a sr1.txt sr2.txt
-      
+
       - name: Run spacerate.sh, ordered by name and reversed
         run: ./spacerate.sh -ar sr1.txt sr2.txt
