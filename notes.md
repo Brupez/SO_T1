@@ -27,3 +27,35 @@ sort -k2: This command sorts the output of du based on the second field, which i
 
 ## Output Limit
 head -n <limit number of outputs> - it displays only the limit inserted as an argument of the output of the 'du' command in this case.
+
+
+## TESTING
+
+- Commands of -n, -a, -r not showing table output
+
+# output
+SO_T1 git:(main) ./spacecheck.sh -n ".*sh" sop
+SIZE       NAME 20231106 -n .*sh sop
+
+➜  SO_T1 git:(main) ./spacecheck.sh -r -n ".*sh" sop
+SIZE       NAME 20231106 -r -n .*sh sop
+
+➜  SO_T1 git:(main) ./spacecheck.sh -a -n ".*sh" sop
+SIZE       NAME 20231106 -a -n .*sh sop
+
+
+- Commands not limit the size folders
+
+#output
+
+➜  SO_T1 git:(main) ✗ ./spacecheck.sh -s 8000 sop
+SIZE       NAME 20231106 -s 8000 sop
+
+➜  SO_T1 git:(main) ./spacecheck.sh -s 5000 sop
+SIZE       NAME 20231106 -s 5000 sop
+
+
+
+
+
+
