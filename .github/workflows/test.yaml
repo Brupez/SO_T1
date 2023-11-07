@@ -32,6 +32,9 @@ jobs:
             done
           done
 
+          mkdir sop/permissionTest
+          touch sop/permissionTest/a.txt
+
           touch sop/json1.json
           touch sop/json2.json
 
@@ -47,6 +50,10 @@ jobs:
 
           dd if=/dev/zero of=sop/json2.json bs=1M count=3
           touch -a -m -t 202211010000.00 sop/json2.json
+
+          chmod 000 sop/subdir4/file1.txt
+          chmod 000 sop/json1.json
+          chmod 000 sop/permissionTest/a.txt
 
       - name: Set execution permissions
         run: chmod +x ./spacecheck.sh
