@@ -64,9 +64,9 @@ printf "${format}" "SIZE" "NAME $dateTime $var"
 if [[ -r "$directory" && -x "$directory" ]]; then
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Y\t%n\n' {} \+ 2>/dev/null)
     else
-        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%Y\t%n\n' {} \+ 2>/dev/null)
     fi
     declare -A sizeNameArray
 
