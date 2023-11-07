@@ -84,6 +84,13 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[1]: Modification date (in Unix seconds)
         # lineArray[2]: Name
 
+        # Get file path (i.e., the parent directory)
+        if [[ -d "${lineArray[2]}" ]]; then
+            lineArray[2]="${lineArray[2]}"
+        else
+            lineArray[2]="${lineArray[2]%/*}"
+        fi
+
         # Set NA if there are no read permissions
         if ! [[ -r "${lineArray[2]}" ]]; then
             sizeNameArray["${lineArray[2]}"]="NA"
@@ -93,13 +100,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # Ignore file if conditions are not met (minimum dir size, maximum date and regex)
         if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
             continue
-        fi
-
-        # Get file path (i.e., the parent directory)
-        if [[ -d "${lineArray[2]}" ]]; then
-            lineArray[2]="${lineArray[2]}"
-        else
-            lineArray[2]="${lineArray[2]%/*}"
         fi
 
         # Assign size to name in an associative array (declared above)
