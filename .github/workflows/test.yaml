@@ -8,8 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test scripts
+  test_spacecheck:
+    name: Test spacecheck.sh
     runs-on: ubuntu-latest
     steps:
       - name: Setup repo
@@ -77,8 +77,12 @@ jobs:
 
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 2000000 sop
-      
-      - name: Create files for spacerate.sh
+  
+  test_spacerate:
+    name: Test spacerate.sh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create base files
         run: |
           echo "SIZE       NAME 20231104 sop
           NA         sop/main/if what
@@ -86,8 +90,7 @@ jobs:
           64         sop/whatever
           6372       sop/main
           13635108   sop
-          11         a
-          " > sr1.txt
+          11         a" > sr1.txt
 
           echo "SIZE       NAME 20231105 -r sop
           NA         sop/main/if what
@@ -95,8 +98,7 @@ jobs:
           64         sop/whatever
           6408       sop/main
           12780      sop
-          1234       b
-          " > sr2.txt
+          1234       b" > sr2.txt
       
       - name: Run spacerate.sh, with no parameters
         run: ./spacerate.sh sr1.txt sr2.txt
