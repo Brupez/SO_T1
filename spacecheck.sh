@@ -61,7 +61,9 @@ dateTime=$(date '+%Y%m%d')
 # Print header
 printf "${format}" "SIZE" "NAME $dateTime $var"
 
+# Check if the directory has permissions to execute
 if [[ -r "$directory" && -x "$directory" ]]; then
+
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
         mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
@@ -85,16 +87,19 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         fi
 
         # Ignore file if conditions are not met
+
         if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
             continue
         fi
 
-        # Get file path
+        # Get file path (-d is a directory?)
         if [[ -d "${lineArray[2]}" ]]; then
             lineArray[2]="${lineArray[2]}"
         else
+            # if not diretory remove the last element in name (file)
             lineArray[2]="${lineArray[2]%/*}"
         fi
+
 
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
@@ -105,13 +110,25 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             parentDir="${parentDir%/*}"
             sizeNameArray["$parentDir"]=$((sizeNameArray["$parentDir"] + "${lineArray[0]}"))
         done
+        
     done
+    
+    ### debub, the minDirsize command is always not working, with 5000 it works but how can i have that value outside of the for above? 
+    minDirSize=5000
 
     # Spaghetti code to workaround sort
     declare -a keyValueArray
     for key in "${!sizeNameArray[@]}"; do
-        keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
+        # Ignore file if conditions are not met
+        if [[ "${sizeNameArray[$key]}" -gt $minDirSize ]]; then 
+            keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
+        else
+            keyValueArray+=("$(printf "${format}" "0" "$key")")
+
+        fi
+
     done
+
 
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then

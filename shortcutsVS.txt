@@ -1,0 +1,4 @@
+Crtl + k + c -> comenta descomenta
+Crtl + d ->  seleciona todo o q é igual
+Crtl + sift + seta ->  copia a linha pra cima
+Crtl + alt + ç ->  foco no terminal

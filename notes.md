@@ -56,6 +56,16 @@ SIZE       NAME 20231106 -s 5000 sop
 
 
 
+Relatório
 
+- que estrutura de dados foi usada
+- como se resolveu os problemas
+- como validaram a solução, quais testes foram usados e porque
+  - fiz o teste por causa x e deu y 
+- conclusão, bibliografia (pode-se incluir o man do terminal)
+
+Spacerate é o 1º - 2º não é preciso cobrir o 2º-1º
+
+as aspas são retiradas pela shell caso $./spacecheck.sh "sop"
 
 
