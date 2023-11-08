@@ -8,14 +8,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test scripts
+  test_spacecheck:
+    name: Test spacecheck.sh
     runs-on: ubuntu-latest
     steps:
       - name: Setup repo
         uses: actions/checkout@v4.1.1
 
-      - name: Create folders
+      - name: Create folders and base files
         run: |
           mkdir sop
 
@@ -32,6 +32,9 @@ jobs:
             done
           done
 
+          mkdir sop/permissionTest
+          touch sop/permissionTest/a.txt
+
           touch sop/json1.json
           touch sop/json2.json
 
@@ -47,6 +50,10 @@ jobs:
 
           dd if=/dev/zero of=sop/json2.json bs=1M count=3
           touch -a -m -t 202211010000.00 sop/json2.json
+
+          chmod 000 sop/subdir4/file1.txt
+          chmod 000 sop/json1.json
+          chmod 000 sop/permissionTest/a.txt
 
       - name: Set execution permissions
         run: chmod +x ./spacecheck.sh
@@ -69,11 +76,51 @@ jobs:
       - name: Run spacecheck.sh, filtered by date
         run: ./spacecheck.sh -d "Dec 1 2022 10:00" sop
 
-      - name: Run spacecheck.sh, filtered by json files
+      - name: Run spacecheck.sh, filtered by regex (.json)
         run: ./spacecheck.sh -n ".*json" sop
 
       - name: Run spacecheck.sh, filtered by minimum size
         run: ./spacecheck.sh -s 2000000 sop
 
       - name: Run spacecheck.sh, filtered by everything
-        run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 8192 sop
+        run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 2000000 sop
+
+  test_spacerate:
+    name: Test spacerate.sh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Create base files
+        run: |
+          echo "SIZE       NAME 20231104 sop
+          NA         sop/main/if what
+          64         sop/main/what if
+          64         sop/whatever
+          6372       sop/main
+          13635108   sop
+          11         a" > sr1.txt
+
+          echo "SIZE       NAME 20231105 -r sop
+          NA         sop/main/if what
+          64         sop/main/what if
+          64         sop/whatever
+          6408       sop/main
+          12780      sop
+          1234       b" > sr2.txt
+
+      - name: Set execution permissions
+        run: chmod +x ./spacerate.sh
+
+      - name: Run spacerate.sh, with no parameters
+        run: ./spacerate.sh sr1.txt sr2.txt
+
+      - name: Run spacerate.sh, reversed
+        run: ./spacerate.sh -r sr1.txt sr2.txt
+
+      - name: Run spacerate.sh, ordered by name
+        run: ./spacerate.sh -a sr1.txt sr2.txt
+
+      - name: Run spacerate.sh, ordered by name and reversed
+        run: ./spacerate.sh -ar sr1.txt sr2.txt

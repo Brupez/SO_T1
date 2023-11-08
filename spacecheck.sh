@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Disclaimer: there are some ifs that test whether the OS is macOS or Linux.
+# macOS users should install the coreutils Homebrew package, in order to use
+# GNU tools instead of the BSD ones (and thus get the same output as in Linux).
+
 orderByName=false   # Disabled
 maxDate=$(date +%s) # Disabled
 outputLimit=0       # Disabled
@@ -61,14 +65,14 @@ dateTime=$(date '+%Y%m%d')
 # Print header
 printf "${format}" "SIZE" "NAME $dateTime $var"
 
-# Check if the directory has permissions to execute
+# Check if directory is readable
 if [[ -r "$directory" && -x "$directory" ]]; then
 
     # Get stats for each file or directory
     if [ $(uname -s) = "Darwin" ]; then
-        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec gstat --printf '%s\t%Y\t%n\n' {} \+ 2>/dev/null)
     else
-        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%Z\t%n\n' {} \+ 2>/dev/null)
+        mapfile -t fileInfo < <(find "$directory" -exec stat --printf '%s\t%Y\t%n\n' {} \+ 2>/dev/null)
     fi
     declare -A sizeNameArray
 
@@ -81,11 +85,20 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[1]: Modification date (in Unix seconds)
         # lineArray[2]: Name
 
+        # Get file path (i.e., the parent directory)
+        if [[ -d "${lineArray[2]}" ]]; then
+            lineArray[2]="${lineArray[2]}"
+        else
+            lineArray[2]="${lineArray[2]%/*}"
+        fi
+
+        # Set NA if there are no read permissions
         if ! [[ -r "${lineArray[2]}" ]]; then
             sizeNameArray["${lineArray[2]}"]="NA"
             continue
         fi
 
+        # Ignore file if conditions are not met (minimum dir size, maximum date and regex)
         # Ignore file if conditions are not met
 
         if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
@@ -104,7 +117,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
 
-        # Add size to all parent directories
+        # Add size to all parent directories (e.g. size in sop/main/ should also count to sop/)
         parentDir="${lineArray[2]}"
         while [[ "$parentDir" != "$directory" ]]; do
             parentDir="${parentDir%/*}"
@@ -117,6 +130,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     minDirSize=5000
 
     # Spaghetti code to workaround sort
+    # Output the print string to an array, so that sort works with real output
     declare -a keyValueArray
     for key in "${!sizeNameArray[@]}"; do
         # Ignore file if conditions are not met
@@ -145,7 +159,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         fi
     fi
 
-    # Print and set output limit
+    # Print output with a limit (if any)
     if [ $outputLimit -gt 0 ]; then
         echo "$output" | head -n $outputLimit
     else
