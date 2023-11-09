@@ -122,11 +122,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             parentDir="${parentDir%/*}"
             sizeNameArray["$parentDir"]=$((sizeNameArray["$parentDir"] + "${lineArray[0]}"))
         done
-
     done
-
-    ### debub, the minDirsize command is always not working, with 5000 it works but how can i have that value outside of the for above?
-    minDirSize=5000
 
     # Spaghetti code to workaround sort
     # Output the print string to an array, so that sort works with real output
@@ -139,7 +135,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             keyValueArray+=("$(printf "${format}" "0" "$key")")
 
         fi
-
     done
 
     # Order by name (-a) and reverse (-r)
