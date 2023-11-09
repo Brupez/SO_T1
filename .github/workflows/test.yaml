@@ -85,6 +85,24 @@ jobs:
       - name: Run spacecheck.sh, filtered by everything
         run: ./spacecheck.sh -ar -l 2 -d "Dec 1 2022 10:00" -n ".*json" -s 2000000 sop
 
+  test_spacecheck_teacher:
+    name: Test spacecheck.sh with teacher script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Set execution permissions
+        run: |
+          chmod +x ./spacecheck.sh
+          chmod +x ./test_a1.sh
+
+      - name: Run command inside script
+        run: ./spacecheck.sh -a test_a1
+
+      - name: Run script
+        run: ./test_a1.sh
+
   test_spacerate:
     name: Test spacerate.sh
     runs-on: ubuntu-latest
