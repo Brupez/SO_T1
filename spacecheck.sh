@@ -87,7 +87,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
 
         # Get file path (i.e., the parent directory)
         if [[ -d "${lineArray[2]}" ]]; then
-            lineArray[2]="${lineArray[2]}"
+            continue
         else
             lineArray[2]="${lineArray[2]%/*}"
         fi
@@ -113,7 +113,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             lineArray[2]="${lineArray[2]%/*}"
         fi
 
-
         # Assign size to name in output associative array
         sizeNameArray["${lineArray[2]}"]=$((sizeNameArray["${lineArray[2]}"] + "${lineArray[0]}"))
 
@@ -123,10 +122,10 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             parentDir="${parentDir%/*}"
             sizeNameArray["$parentDir"]=$((sizeNameArray["$parentDir"] + "${lineArray[0]}"))
         done
-        
+
     done
-    
-    ### debub, the minDirsize command is always not working, with 5000 it works but how can i have that value outside of the for above? 
+
+    ### debub, the minDirsize command is always not working, with 5000 it works but how can i have that value outside of the for above?
     minDirSize=5000
 
     # Spaghetti code to workaround sort
@@ -134,7 +133,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
     declare -a keyValueArray
     for key in "${!sizeNameArray[@]}"; do
         # Ignore file if conditions are not met
-        if [[ "${sizeNameArray[$key]}" -gt $minDirSize ]]; then 
+        if [[ "${sizeNameArray[$key]}" -gt $minDirSize ]]; then
             keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
         else
             keyValueArray+=("$(printf "${format}" "0" "$key")")
@@ -142,7 +141,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         fi
 
     done
-
 
     # Order by name (-a) and reverse (-r)
     if [ $orderByName = true ]; then
