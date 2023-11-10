@@ -99,9 +99,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         fi
 
         # Ignore file if conditions are not met (minimum dir size, maximum date and regex)
-        # Ignore file if conditions are not met
-
-        if [[ "${lineArray[0]}" -lt $minDirSize ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
+        if [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
             continue
         fi
 
@@ -133,7 +131,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
             keyValueArray+=("$(printf "${format}" "${sizeNameArray[$key]}" "$key")")
         else
             keyValueArray+=("$(printf "${format}" "0" "$key")")
-
         fi
     done
 
