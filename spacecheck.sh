@@ -86,7 +86,7 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         # lineArray[2]: Name
 
         # Get file path (i.e., the parent directory)
-        if [[ -d "${lineArray[2]}" ]]; then
+        if [[ -d "${lineArray[2]}" ]] || [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
             continue
         else
             lineArray[2]="${lineArray[2]%/*}"
@@ -96,19 +96,6 @@ if [[ -r "$directory" && -x "$directory" ]]; then
         if ! [[ -r "${lineArray[2]}" ]]; then
             sizeNameArray["${lineArray[2]}"]="NA"
             continue
-        fi
-
-        # Ignore file if conditions are not met (minimum dir size, maximum date and regex)
-        if [[ "${lineArray[1]}" -gt $maxDate ]] || ! [[ "${lineArray[2]}" =~ ${filter} ]]; then
-            continue
-        fi
-
-        # Get file path (-d is a directory?)
-        if [[ -d "${lineArray[2]}" ]]; then
-            lineArray[2]="${lineArray[2]}"
-        else
-            # if not diretory remove the last element in name (file)
-            lineArray[2]="${lineArray[2]%/*}"
         fi
 
         # Assign size to name in output associative array
