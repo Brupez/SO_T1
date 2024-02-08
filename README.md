@@ -1,3 +1,5 @@
+#  <ins>Nota: 15<ins>
+
 # Storage management: Occupied space monitoring
 First project for "Sistemas Operativos", 2023/2024.
 
